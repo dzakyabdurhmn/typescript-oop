@@ -562,4 +562,476 @@ asynchronous itu harus menunggu yang di mana hasil dari asynchronous itu selesai
 
 ## Abstract Class
 
-> > Abstract Class adalah sebuah class yang tidak bisa di instiasi secara langsung oleh client karena memang bentuknya belum jelas (abstrak). Abstract C    lass juga bisa juga sebagai teampleate yang mana di setiap class yang meng exstends-nya harus mengimplementasikan method yang sudah di tentukan oleh abstrak class ini. ada aturan-nya lagi, pada abstrak class harus ada (memiliki) satu absrak method
+> > Abstract Class adalah sebuah class yang tidak bisa di instiasi secara langsung oleh client karena memang bentuknya belum jelas (abstrak). Abstract C lass juga bisa juga sebagai teampleate yang mana di setiap class yang meng exstends-nya harus mengimplementasikan method yang sudah di tentukan oleh abstrak class ini. ada aturan-nya lagi, pada abstrak class harus ada (memiliki) satu absrak method
+
+```ts
+abstract class Hewan12 {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  makan(): void {
+    console.log(`${this.name} Sedang makann`);
+  }
+
+  abstract bergerak(): void;
+  //karena hewan bergeraknya masih belum jelas (ada yang berenang, terbang dan berjalan) maka kita kasih abstrac method. tapi sudah jelas ada nama dan bisa makan
+}
+
+class KucingClass extends Hewan12 {
+  constructor() {
+    super("kucing");
+  }
+  bergerak(): void {
+    console.log("kucing berjalan");
+  }
+}
+
+class BurungClass extends Hewan12 {
+  constructor() {
+    super("Manuk");
+  }
+  bergerak(): void {
+    console.log("Burung Terbang");
+  }
+}
+
+const kucing = new KucingClass();
+kucing.bergerak();
+
+const Burung = new BurungClass();
+Burung.bergerak();
+```
+
+```bash
+$ deno run abstract_class.ts
+kucing berjalan
+Burung Terbang
+```
+
+> jadi dari sini kita bisa tau bahwa abstrac class ini (` abstract bergerak(): void;`) membuat 1 aturan bahwa jika ada class yang mengekstend class Hewan12 `abstract class Hewan12 {
+` dia wajib ada satu method yang namanya bergerak
+
+## Interface
+
+> > Interface merupakan sebuah perjanjian atau kontrak yang mana semua property atau method yang sudah di sepakati di dalam Interface itu harus di implementasikan kepada class yang menggunakan Interface tersebut
+
+```ts
+interface Android {
+  name: string;
+  menu(): void;
+  home(): void;
+  back(): void;
+}
+
+class Samsung implements Android {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+  menu(): void {
+    console.log("Menu clicked");
+  }
+  home(): void {
+    console.log("Home clicked");
+  }
+  back(): void {
+    console.log("Back clicked");
+  }
+}
+```
+
+## Interface Optional Property
+
+> > Interface Optional Property pada sebuah interface kita bisa mengabaikan property pada interface yang sifatnya opsional
+
+```ts
+interface Teacher {
+  name: string;
+  age: number;
+  phone?: string;
+}
+
+let teacher: Teacher = { name: "Pak joko", age: 23 };
+let teacher2: Teacher = { name: "Pak solikhin", age: 20, phone: "08123456789" };
+```
+
+## Interface Readonly Property
+
+> > Interface Readonly Property pada sebuah interface kita TIDAK BISA MERUBAH interface tersebut
+
+```ts
+interface Student {
+  readonly name: string;
+  readonly age: number;
+}
+
+let jasmine: Student = { name: "jasmine", age: 17 };
+
+<| END CODE |>
+
+// code di bawah ini bakalan eror karena kita memakai readonly
+//EROR : Cannot assign to 'name' because it is a read-only property.
+// EROR: Cannot assign to 'age' because it is a read-only property.
+jasmine.name = "dzaky";
+jasmine.age = 17;
+```
+
+## Interface Inheritance
+
+> > Interface Inheritance memungkinkan kita untuk meng-exstend (meng-implementasikan) interface yang lainnya
+
+```tsx
+interface Vehicle {
+  name: string;
+  whells: number;
+}
+
+interface Honda extends Vehicle {
+  type: string;
+  doors: number;
+}
+
+class Civic implements Honda {
+  name: string = "Civic";
+  type: string = "Turbo";
+  whells: number = 4;
+  doors: number = 5;
+}
+```
+
+## Interface Extends Class
+
+> > yang unik pada typescript adalah selain dia bisa meng-exstends interface (`interface Abd extends Vehicle`) di typescript Interface juga meng-exstends sebuah class
+
+```ts
+class Animal {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+interface IShark extends Animal {
+  swim(): void;
+}
+
+class Shark implements IShark {
+  name: string = "Hiu";
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  swim(): void {
+    console.log("Hiu sedang berenang di laut");
+  }
+}
+```
+
+## Dependency Injection
+
+> > Dengan adanya interface kita bisa meng-inject sebuah class kedalam class lain secara dinamis
+
+```ts
+class Store {
+  private name: string = "Toko A";
+  private profit: number = 1000;
+
+  getName(): string {
+    return this.name;
+  }
+
+  getProfit(): number {
+    return this.profit;
+  }
+}
+
+class FasionProduct {
+  private store: Store;
+  private name: string;
+  private price: number;
+
+  constructor(name: string, price: number) {
+    this.name = name;
+    this.price = price;
+
+    this.store = new Store();
+  }
+  shell(): void {
+    console.log(
+      `${this.name} harga jualnya adalah ${this.store.getProfit() + this.price}`
+    );
+  }
+}
+
+const baju = new FasionProduct("baju lengan panjang", 50000);
+baju.shell();
+```
+
+<!-- Kode di atas sudah jadi dan tidak tedapat masalah tetapi akan terdapat masalah jika kode di atas berjumlah ribuan (banyak) maka dari itu kita butuh depedensi injection -->
+
+```ts
+interface IToko {
+  name: string;
+  profit: number;
+  getProfit(): number;
+}
+
+class Toko1 implements IToko {
+  name: string = "Toko lama";
+  profit: number = 90000;
+
+  getName(): string {
+    return this.name;
+  }
+
+  getProfit(): number {
+    return this.profit;
+  }
+}
+
+class Toko2 implements IToko {
+  name: string = "Toko 2";
+  profit: number = 3232323;
+
+  getName(): string {
+    return this.name;
+  }
+
+  getProfit(): number {
+    return this.profit;
+  }
+}
+
+class HijabProduct {
+  private toko: IToko;
+  private name: string;
+  private price: number;
+
+  constructor(toko: IToko, name: string, price: number) {
+    this.name = name;
+    this.price = price;
+
+    this.toko = new Toko2();
+  }
+
+  shell(): void {
+    console.log(
+      ` harga ${this.name} adalah  ${this.toko.getProfit() + this.price} `
+    );
+  }
+}
+
+class BajuProduct {
+  private toko: IToko;
+  private name: string;
+  private price: number;
+
+  constructor(toko: IToko, name: string, price: number) {
+    this.name = name;
+    this.price = price;
+
+    this.toko = new Toko1();
+  }
+
+  shell(): void {
+    console.log(
+      ` harga ${this.name} adalah  ${this.toko.getProfit() + this.price} `
+    );
+  }
+}
+
+const tokolama = new Toko2();
+const tokobaru = new Toko1();
+
+const bajumerah = new BajuProduct(tokolama, "baju mahal", 80000);
+const hijab = new HijabProduct(tokolama, "baju mahal", 80000);
+
+// console.log(hijab);
+// console.log(bajumerah);
+
+hijab.shell();
+bajumerah.shell();
+```
+
+## Generics
+
+> > Generics menjadikan sebuah funcition,class atau interface memiliki berbagai tipe data yang lebih dinamis (NB: Untuk materi tentang Generics tidak memiliki hubungan langsung dengan OOP hanya sebuah tambahan)
+
+```ts
+function DapatkanData(nilai: any) {
+  return nilai;
+}
+
+const data1 = DapatkanData("test");
+console.log(data1);
+```
+
+```bash
+$ deno run Generics.ts
+test
+
+```
+
+Maka tidak ada masalah karena valuenya `any` (bebas kita mau memasang apa aja) tetapi memiliki kelemahan yaitu jika kita menggunakan tipe data `any` maka kita tidak bisa mendeteksi tipe data apa yang sedang di input, yang dimana nantinya kita tidak bisa menggunakan fungsi length (untuk menghitung karakter di dalam string) atau kita juga tidak bisa menggunakan fitur `to lowercase` (untuk membuat sebuah `string` menjadi huruf kecil semua ) dan sebagainya
+
+<!-- Data yang Generic: -->
+
+```ts
+function getKumpulan<Type>(nilai: Type): Type {
+  return nilai;
+}
+
+const data = getKumpulan<string>("ini adalah generic");
+console.log(data.toLocaleUpperCase());
+
+const data2 = getKumpulan<number>(1000);
+console.log(data2.toFixed(2));
+```
+
+```bash
+$ deno run Generics.ts
+INI ADALAH GENERIC
+1000.00
+```
+
+## Generic Interface
+
+> > Jadi kita akan menanam generic di dalam interface
+
+```ts
+interface Generic<Type> {
+  props: Type;
+}
+
+function genericFuncition<Type>(value: Type): Generic<Type> {
+  let data: Generic<Type> = {
+    props: value,
+  };
+  return data;
+}
+
+console.log(genericFuncition<string>("Generic Interface"));
+console.log(genericFuncition<number>(5432).props);
+console.log(genericFuncition<boolean>(true));
+```
+
+```bash
+$ deno run genericinterface.ts
+{ props: "Generic Interface" }
+5432
+{ props: true }
+```
+
+## Generics Type
+
+> > Sebenarnya TIDAK jauh beda dengan Generic Interface hanya merubah menjadi `type`
+
+```ts
+type Generic2<Type> = Type;
+
+function genericFuncition2<Type>(value: Type): Generic2<Type> {
+  return value;
+}
+
+console.log(genericFuncition2<string>("Generic dari Type"));
+```
+
+```bash
+$ deno run generictype.ts
+Generic dari Type
+```
+
+## Generic Class
+
+> > Generic yang di implementasikan pada sebuah class
+
+```ts
+interface Generic3<Type> {
+  props: Type;
+  methodA(): Type;
+}
+
+class GenericClass<Type> implements Generic3<Type> {
+  props: Type;
+
+  constructor(prop: Type) {
+    this.props = prop;
+  }
+
+  methodA(): Type {
+    return this.props;
+  }
+}
+
+const genericClassA = new GenericClass<number>(123);
+console.log(genericClassA.methodA());
+```
+
+```bash
+$ deno run genericclass.ts
+123
+```
+
+## Generics Class 2
+
+> > Generic yang di implementasikan pada sebuah class (membuat generic yang mana type dari genericnya adalah sebuah class yang sebelumnya kan hanya `number` atau `string` yaa untuk Generic sekarang kita masukan class kedalam tipe data genericnya)
+
+```ts
+class PropsClassA {
+  name: string = "class A";
+}
+
+class PropsClassBaru<Type> {
+  classProps: Type;
+
+  constructor(classProps: Type) {
+    this.classProps = classProps;
+  }
+}
+
+const classA = new PropsClassA();
+const ClassBaru = new PropsClassBaru(classA);
+
+console.log(classA);
+console.log(ClassBaru);
+```
+
+```bash
+$ deno run genericclass2.ts
+PropsClassA { name: "class A" }
+PropsClassBaru { classProps: PropsClassA { name: "class A" } }
+```
+
+## Generics Constraint
+
+> > Terkadang kita juga butuh menampilkan beberapa options setiap types yang masuk di dalam generic
+
+```ts
+interface Length {
+  length: number;
+}
+
+function Genericsconstraint<Type extends Length>(argumen: Type): Type {
+  console.log(argumen.length);
+  return argumen;
+}
+
+const C_Genericsconstraint = Genericsconstraint("Generics constraint(yaaa)");
+console.log(C_Genericsconstraint);
+
+const C2_Genericsconstraint = Genericsconstraint({ length: 10, value: 200 });
+```
+
+```bash
+$ deno run Genericsconstraint.ts
+25
+Generics constraint(yaaa)
+10
+```
+
+## Generics Class Constraint
