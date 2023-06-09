@@ -519,6 +519,47 @@ kenapa berubah?
 
 > > Return Type pada sebuah Method berfungsi untuk membatasi atau mengatur tipe apa yang akan di retrun oleh sebuah Method
 
-```tsx
+- string
 
+```tsx
+class Burung {
+  private kaki: number = 2;
+
+  getKaki(): number {
+    return this.kaki;
+  }
 ```
+
+Pada bagian `getKaki()` kita mencantumkan type apa yang harus di kembalikan ketika kita memakai method ini `:string`
+
+- void (tidak mengembalikan nilai apa apa)
+
+```tsx
+class Burung {
+  private kaki: number = 2;
+
+
+  terbang(): void {
+    console.log("terbang");
+  }
+```
+
+jika kita menggunakan `void` maka methodnya tidak mengembalikan apa apa, jika kita mengisinya menggunakan number itu pasti eror karena `number` atau `string` itu membutuhkan sebuah `retrun`, tapi kalau `void` ga boleh ada `retrun`nya
+
+- Fungsi atau method yang melibatkan asynchronous
+
+```tsx
+class Burung {
+  private kaki: number = 2;
+
+  async makan(): Promise<string> {
+    return "string";
+  }
+}
+```
+
+asynchronous itu harus menunggu yang di mana hasil dari asynchronous itu selesai
+
+## Abstract Class
+
+> > Abstract Class adalah sebuah class yang tidak bisa di instiasi secara langsung oleh client karena memang bentuknya belum jelas (abstrak). Abstract C    lass juga bisa juga sebagai teampleate yang mana di setiap class yang meng exstends-nya harus mengimplementasikan method yang sudah di tentukan oleh abstrak class ini. ada aturan-nya lagi, pada abstrak class harus ada (memiliki) satu absrak method
