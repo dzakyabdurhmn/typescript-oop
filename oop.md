@@ -1035,3 +1035,190 @@ Generics constraint(yaaa)
 ```
 
 ## Generics Class Constraint
+
+> > Kita bisa mengakses beberapa method yang ada pada class di dalam generic funcition
+
+```ts
+interface Product {
+  shell(): void;
+}
+
+class CarProduct implements Product {
+  shell(): void {
+    console.log("Jual mobil");
+  }
+}
+
+class MotorProduct implements Product {
+  shell(): void {
+    console.log("Jual motor");
+  }
+}
+
+// funcition di gunakan untuk menjalankan
+// beberapa method yang ada di dalam class
+function shellProduct<T extends Product>(product: T[]): void {
+  product.forEach((product) => product.shell());
+}
+
+const car = new CarProduct();
+const motor = new MotorProduct();
+
+shellProduct([car, motor]);
+```
+
+Jadi dengan begini kita bisa memanggil method yang ada di dalam class
+
+## Type Parameters in Generic Constraint
+
+Sebenarnya materi ini hanya tambahan agar bisa mengerti lebih jauh tentang Generic (supaya tau bagaimana cara generic itu bekerja)
+
+```ts
+function getProperty<T, U extends keyof T>(objek: T, key: U) {
+  return objek[key];
+}
+
+let x = { a: 1, b: 2, c: 3, d: 4 };
+
+console.log(getProperty(x, "a"));
+console.log(getProperty(x, "d"));
+```
+
+```bash
+$ deno run type_parameters_in_generic_constraint.ts
+1
+4
+```
+
+## Namespace
+
+> > Namespace adalah sebuah fitur yang memungkinkan kita untuk mengelompokkan kode kedalam sebuah scope yang unik(tidak boleh ada nama (variable) yang sama) tidak bisa ada class yang sama karena dia bersifat global jika ada class yang sama maka ada class yang eror
+> > EROR: Duplicate identifier '(variable)'.ts(2300)
+
+```ts
+namespace Product {
+  class Hewan {}
+  const kucing = new Hewan();
+}
+```
+
+itu cara penggunaan namespace tetapi kita tidak bisa mengakses class yang ada di dalam namespace
+
+lalu gimana cara memakai class yang ada di dalam namespace?
+
+```ts
+namespace ContohNamespace {
+  export class Hewan {}
+  export const kucing = new Hewan();
+}
+
+const kupukupu = new ContohNamespace.Hewan();
+let lebah = ContohNamespace.kucing;
+```
+
+## Type vs Interface
+
+> > (Sebenarnya materi ini tidak ada hubungannya dengan OOP) tetapi masih banyak yang belum bisa membedakan antara Type dan Interface karena memang di interface dan type bisa di bilang sama, sebuah variable bisa memakai tipe data type maupun interface. namun keduanya, terkadang juga di suatu kondisi tidak bisa memakai type dan interface
+
+```ts
+// Singkatnya Interface harus bertipe Object sedangkan type bisa langsung di deklarasikan dan juga bisa langsung seperti interface (object)
+
+type Phone = string;
+type PC = number;
+
+type Mac = {
+  name: string;
+};
+
+interface Laptop {
+  name: string;
+}
+
+//Interface bisa di merge (bisa doble) sedangkan type tidak
+
+interface Dinosaurus {
+  nama: string;
+}
+
+interface Dinosaurus {
+  berat: number;
+}
+
+// Jika kita meng-implementasikan Dinosaurus (Interface Dinosaurus) maka kita perlu 2 property (name dan berat)
+class Velociraptor implements Dinosaurus {
+  nama: "Velociraptor";
+  berat: 10;
+}
+
+// Hal lain nya adalah dengan interface kita bisa implements dan exstend class dengan mudah tetapi tidak dengan type jadi pada materi sebalumnya (## Interface Extends Class) kalau interface bisa meng-exstend  sebuah class tetapi tidak dengan type. Sebenarnya type juga bisa di merge seperti interface tetapi dengan cara yang berberda lebih tepatnya bukan merge tetapi intersection
+
+type Nama = {
+  nama: string;
+};
+
+type Umur = {
+  umur: number;
+};
+
+type AllStudent = Nama & Umur;
+
+// dengan cara seperti ini kita bisa merge si-type ini
+
+const Student1: AllStudent = {
+  nama: "cut jasmine",
+  umur: 17,
+};
+
+// jadi itu adalah cara menggabungkan beberapa type menjadi satu type
+
+// Selain menggunakan `Nama & Umur` kita juga bisa menggunakan ***UNION*** `|` (memilih salah satu)
+
+type UnionStudent = Nama | Umur;
+
+const Student2: UnionStudent = {
+  nama: "Cut Jasmine Utari putri zulani",
+};
+
+const Student3: UnionStudent = {
+  umur: 17,
+};
+```
+
+Mungkin masih banyak cara selain cara yang di atas
+
+Pertanyaannya Kapan kita harus pakai Type dan kapan kita harus pakai interface?
+
+Jawaban:
+
+- Pakailah interface jika ingin membuat object baru atau method dalam sebuah object (Cocoknya interface itu di pasang pada class)
+
+```ts
+interface MyInterface {
+    void myMethod();
+}
+
+class MyClass implements MyInterface {
+    @Override
+    public void myMethod() {
+        // implementasi logika metode di sini
+    }
+}
+```
+
+> > Dalam contoh di atas, kita memiliki antarmuka bernama MyInterface yang mendefinisikan satu metode myMethod(). Kemudian, kita memiliki kelas MyClass yang mengimplementasikan MyInterface dan menyediakan implementasi konkret untuk metode myMethod().
+
+- Pakailah Type kalau memang ingin membuat sebuah variable atau funcition
+
+```ts
+type MyType = number;
+
+let asdf: MyType;
+function getData(): MyType {
+  // Implementasi logika fungsi di sini
+  return 0;
+}
+```
+
+memang juga bisa menggunakan interface tetapi kuncinya adalah konsistensi
+
+## Selesaiii
